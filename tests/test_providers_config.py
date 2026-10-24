@@ -16,7 +16,7 @@ def test_missing_gemini_key_is_503_with_env_var_name():
         assert err["details"][0]["path"] == "env.GEMINI_API_KEY"
         assert err["requestId"] and r.headers["x-request-id"] == err["requestId"]
         rd = c.get("/ready")
-        assert rd.status_code == 503 and rd.json()["checks"]["provider"] == {"status": "not_configured", "name": "gemini", "model": "gemini-2.5-flash", "missing": ["GEMINI_API_KEY"]}
+        assert rd.status_code == 503 and rd.json()["checks"]["provider"] == {"status": "not_configured", "name": "gemini", "model": "gemini-3.8-flash", "missing": ["GEMINI_API_KEY"]}
         # liveness stays up
         assert c.get("/health").status_code == 200
 
