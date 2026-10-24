@@ -10,6 +10,12 @@ from typing import Any
 import httpx
 
 from ..domain import TaskRecord
+from ..services.scam_shield import (
+    SCENARIOS,
+    ScamAnalysisResult,
+    analyze_deterministic_mock,
+    build_emergency_sms,
+)
 from .registry import ToolContext, ToolFailure, ToolRegistry, ToolSpec, ToolUnavailable
 
 # ---------- calculator (safe AST evaluator, no eval) ----------
@@ -130,12 +136,40 @@ async def request_human_approval(ctx: ToolContext, args: dict) -> dict:
     return {"approvalId": a.id, "status": "pending", "message": "Waiting for a human to approve or reject. Do not proceed until told."}
 
 
+async def analyze_call_scam(ctx: ToolContext, args: dict) -> dict:
+    scenario_id = args.get("scenario_id")
+    transcript = (args.get("transcript") or "").strip()
+    if scenario_id and scenario_id in SCENARIOS and not transcript:
+        transcript = SCENARIOS[scenario_id].transcript
+    if not transcript and not scenario_id:
+        raise ToolFailure("Provide a transcript or valid scenario_id", "INVALID_INPUT")
+    res: ScamAnalysisResult = analyze_deterministic_mock(transcript, scenario_id=scenario_id)
+    sms = build_emergency_sms(res, recipient=args.get("recipient", "Son (Rahul)"))
+    return {
+        **res.model_dump(),
+        "emergency_dispatch": sms.model_dump() if sms else None,
+    }
+
+
 def _obj(props: dict, required: list[str] | None = None) -> dict:
     return {"type": "object", "properties": props, "required": required or [], "additionalProperties": False}
 
 
 def build_registry() -> ToolRegistry:
     r = ToolRegistry()
+    r.register(ToolSpec(
+        "analyze_call_scam",
+        "Analyze live call transcript or scenario for Indian phone scams (Digital Arrest, Fake Police/Cyber Cell, Bank KYC OTP fraud) and trigger emergency SMS alert if confidence >= 0.70.",
+        _obj({
+            "transcript": {"type": "string", "minLength": 1, "maxLength": 4000},
+            "scenario_id": {
+                "type": "string",
+                "enum": ["gujarati_digital_arrest", "hindi_digital_arrest", "english_bank_kyc", "genuine_delivery_control"],
+            },
+            "recipient": {"type": "string", "maxLength": 100},
+        }),
+        analyze_call_scam, risk="low", permissions=["scam:analyze"], timeout_ms=10000,
+    ))
     r.register(ToolSpec(
         "calculator", "Evaluate an arithmetic expression exactly. Use for any math.",
         _obj({"expression": {"type": "string", "description": "e.g. (12.5 + 3) * 4", "minLength": 1, "maxLength": 200}}, ["expression"]),

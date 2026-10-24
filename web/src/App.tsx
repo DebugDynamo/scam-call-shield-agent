@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { api, API_URL, type Health, type Ready, type Session } from "./api";
 import ChatTab from "./ChatTab";
 import VoiceTab from "./VoiceTab";
+import ScamShieldTab from "./ScamShieldTab";
 import TracePanel from "./TracePanel";
 
 export default function App() {
-  const [tab, setTab] = useState<"chat" | "voice">("chat");
+  const [tab, setTab] = useState<"chat" | "voice" | "shield">("shield");
   const [health, setHealth] = useState<Health | null>(null);
   const [ready, setReady] = useState<Ready | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -55,12 +56,13 @@ export default function App() {
         <div className="error">LLM provider not configured. Missing env: {ready.checks.provider.missing.join(", ")} (server-side).</div>
       )}
       <nav>
+        <button className={tab === "shield" ? "active" : ""} onClick={() => setTab("shield")}>🛡️ Scam Call Shield</button>
         <button className={tab === "chat" ? "active" : ""} onClick={() => setTab("chat")}>Text chat</button>
         <button className={tab === "voice" ? "active" : ""} onClick={() => setTab("voice")}>Browser voice</button>
       </nav>
       <main>
         <section className="left">
-          {tab === "chat" ? <ChatTab onSession={setSession} /> : <VoiceTab ready={ready} onSession={setSession} />}
+          {tab === "shield" ? <ScamShieldTab /> : tab === "chat" ? <ChatTab onSession={setSession} /> : <VoiceTab ready={ready} onSession={setSession} />}
         </section>
         <aside className="right">
           <TracePanel session={session} onSession={setSession} />

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scam Call Shield — Active AI Voice Guardian for India</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-danger {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+      50% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+    }
+    @keyframes flash-banner {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.78; }
+    }
+    @keyframes wave-bar {
+      0%, 100% { transform: scaleY(0.25); }
+      50% { transform: scaleY(1); }
+    }
+    .scam-pulse {
+      animation: pulse-danger 1.6s infinite;
+    }
+    .scam-flash {
+      animation: flash-banner 1.1s infinite ease-in-out;
+    }
+    .wave-active {
+      animation: wave-bar 0.7s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
+  <!-- Top Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 4v5c0 5-3.5 8.5-7 9-3.5-.5-7-4-7-9V7l7-4z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">Scam Call Shield</h1>
+            <span class="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              India Voice Guardian
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Real-Time Multimodal Gemini Audio Interceptor · Gujarati · Hindi · English</p>
+        </div>
+      </div>
+
+      <!-- System Status Pills & Mode Switcher -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <div class="inline-flex rounded-full bg-slate-950 p-1 border border-slate-800">
+          <button
+            type="button"
+            id="btn-mode-gemini"
+            onclick="switchEngineMode('gemini')"
+            class="px-3 py-1 rounded-full font-semibold transition text-slate-400 hover:text-white"
+          >
+            ⚡ Real-Time Gemini
+          </button>
+          <button
+            type="button"
+            id="btn-mode-mock"
+            onclick="switchEngineMode('mock')"
+            class="px-3 py-1 rounded-full font-semibold transition text-slate-400 hover:text-white"
+          >
+            🧪 Demo Mode
+          </button>
+        </div>
+        <button
+          type="button"
+          onclick="toggleModeModal(true)"
+          class="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 font-semibold transition"
+        >
+          ⚙️ Mode Screen
+        </button>
+        <span id="badge-mode" class="hidden px-2.5 py-1 rounded-full font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/40">
+          DEMO / SIMULATED MODE
+        </span>
+        <span id="badge-provider" class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+          Checking Gemini Engine...
+        </span>
+        <label class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/90 border border-slate-700 cursor-pointer select-none">
+          <input id="toggle-autospeak" type="checkbox" checked class="accent-amber-500 rounded" />
+          <span class="text-slate-300">Auto-Speak Alert</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dedicated Mode Switcher Screen / Modal -->
+  <div id="mode-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-white">Engine Mode Switcher</h2>
+          <p class="text-xs text-slate-400">Switch live between Real-Time Google Gemini Multimodal AI &amp; Deterministic Demo Mode</p>
+        </div>
+        <button type="button" onclick="toggleModeModal(false)" class="text-slate-400 hover:text-white text-lg font-bold px-2">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Real-Time Gemini Card -->
+        <button
+          type="button"
+          id="card-mode-gemini"
+          onclick="switchEngineMode('gemini')"
+          class="text-left p-4 rounded-xl border border-slate-700 bg-slate-950 hover:border-emerald-500 transition space-y-1.5"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Real-Time AI</span>
+            <span id="dot-gemini" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+          </div>
+          <div class="font-bold text-sm text-white">⚡ Live Gemini Multimodal</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Sends raw WAV/WebM audio chunks to Google <code>gemini-2.5-flash</code> using <code>GEMINI_API_KEY</code> from <code>.env</code>.
+          </p>
+        </button>
+
+        <!-- Demo / Simulated Card -->
+        <button
+          type="button"
+          id="card-mode-mock"
+          onclick="switchEngineMode('mock')"
+          class="text-left p-4 rounded-xl border border-slate-700 bg-slate-950 hover:border-purple-500 transition space-y-1.5"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">Offline Safe</span>
+            <span id="dot-mock" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+          </div>
+          <div class="font-bold text-sm text-white">🧪 Deterministic Demo Mode</div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Zero-latency rule-based Indian scam classifier (`simulated: true`). Ideal for offline stage backup.
+          </p>
+        </button>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1.5 font-mono">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Active Provider:</span>
+          <span id="modal-active-provider" class="text-amber-300 font-bold">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">.env GEMINI_API_KEY:</span>
+          <span id="modal-key-status" class="text-emerald-400">-</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Target Model:</span>
+          <span id="modal-model-name" class="text-slate-200">gemini-2.5-flash</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button
+          type="button"
+          onclick="toggleModeModal(false)"
+          class="px-4 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Column: Pre-Loaded Scenarios + Live Caller Stream (5 cols) -->
+    <section class="lg:col-span-5 space-y-5">
+      <!-- Scenario Selector Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">1. Select Call Scenario</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Simulates live caller speech &amp; dispatches a mid-call audio chunk at 1.7s</p>
+          </div>
+          <span class="text-[11px] font-mono text-slate-500">3–5s Chunk Window</span>
+        </div>
+
+        <div class="space-y-2.5" id="scenario-buttons">
+          <!-- Scenario 1: Gujarati Digital Arrest -->
+          <button
+            type="button"
+            onclick="startScenario('gujarati_digital_arrest')"
+            id="btn-gujarati_digital_arrest"
+            class="scenario-btn w-full text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-red-500/60 hover:bg-slate-900 transition group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-red-500/15 text-red-300 border border-red-500/30">
+                Scam · Gujarati (gu-IN)
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-white transition">▶ Simulate Call</span>
+            </div>
+            <div class="font-semibold text-sm text-white mt-1.5">1. Gujarati Scam — "Digital Arrest"</div>
+            <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">
+              "નમસ્તે, હું મુંબઈ પોલીસ સાયબર સેલમાંથી બોલું છું. તમારા આઈડી નંબર પર મોકલેલા પાર્સલમાં ડ્રગ્સ મળ્યા છે..."
+            </div>
+          </button>
+
+          <!-- Scenario 2: Hindi Digital Arrest -->
+          <button
+            type="button"
+            onclick="startScenario('hindi_digital_arrest')"
+            id="btn-hindi_digital_arrest"
+            class="scenario-btn w-full text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-red-500/60 hover:bg-slate-900 transition group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-red-500/15 text-red-300 border border-red-500/30">
+                Scam · Hindi (hi-IN)
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-white transition">▶ Simulate Call</span>
+            </div>
+            <div class="font-semibold text-sm text-white mt-1.5">2. Hindi Scam — "Digital Arrest"</div>
+            <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">
+              "नमस्ते, मैं मुंबई पुलिस साइबर सेल से बोल रहा हूँ। आपके आईडी नंबर से भेजे गए पार्सल में ड्रग्स मिले हैं..."
+            </div>
+          </button>
+
+          <!-- Scenario 3: English Bank KYC -->
+          <button
+            type="button"
+            onclick="startScenario('english_bank_kyc')"
+            id="btn-english_bank_kyc"
+            class="scenario-btn w-full text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-amber-500/60 hover:bg-slate-900 transition group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                Scam · English (en-IN)
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-white transition">▶ Simulate Call</span>
+            </div>
+            <div class="font-semibold text-sm text-white mt-1.5">3. English Scam — "Bank KYC Expiry"</div>
+            <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">
+              "Hello, this is your bank's KYC team. Your account will be blocked today because your KYC has expired..."
+            </div>
+          </button>
+
+          <!-- Scenario 4: Genuine Control Call (Swiggy Delivery) -->
+          <button
+            type="button"
+            onclick="startScenario('genuine_delivery_control')"
+            id="btn-genuine_delivery_control"
+            class="scenario-btn w-full text-left p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 hover:border-emerald-500/60 hover:bg-slate-900 transition group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                Control · Genuine Call (en-IN)
+              </span>
+              <span class="text-xs text-slate-400 group-hover:text-white transition">▶ Simulate Call</span>
+            </div>
+            <div class="font-semibold text-sm text-white mt-1.5">4. Genuine Control Call — Swiggy Delivery Partner</div>
+            <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">
+              "Hi, this is the delivery partner from Swiggy. I'm outside your building with your order. Which gate should I come to?"
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Call Stream & Audio Chunk Simulator -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span id="call-dot" class="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-300">2. Live Incoming Call Stream</h2>
+          </div>
+          <span id="call-timer" class="text-xs font-mono text-slate-400">00:00.0</span>
+        </div>
+
+        <!-- Caller ID Box -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+          <div>
+            <div id="caller-label" class="text-sm font-semibold text-slate-200">No Active Call</div>
+            <div id="caller-number" class="text-xs font-mono text-slate-400">Select a scenario above or record mic chunk</div>
+          </div>
+          <!-- Audio Waveform Bars -->
+          <div id="waveform" class="flex items-end gap-1 h-7 px-2">
+            <span class="w-1 h-3 bg-amber-500/50 rounded-full"></span>
+            <span class="w-1 h-5 bg-amber-500/50 rounded-full"></span>
+            <span class="w-1 h-4 bg-amber-500/50 rounded-full"></span>
+            <span class="w-1 h-6 bg-amber-500/50 rounded-full"></span>
+            <span class="w-1 h-3 bg-amber-500/50 rounded-full"></span>
+          </div>
+        </div>
+
+        <!-- Live Caller Transcript Box -->
+        <div class="mt-3">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Caller Audio Stream / Transcript</span>
+            <span id="chunk-status" class="font-mono text-amber-400">Idle</span>
+          </div>
+          <div
+            id="live-transcript"
+            class="min-h-[88px] p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-sm leading-relaxed text-slate-200 font-medium"
+          >
+            Click any of the 4 scenario buttons above to start reading the incoming caller script aloud and automatically trigger a mid-call audio chunk upload at ~1.7 seconds.
+          </div>
+        </div>
+
+        <!-- Mid-Call Controls & Custom Audio Upload -->
+        <div class="mt-3.5 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            id="btn-analyze-now"
+            onclick="triggerMidCallAnalysisNow()"
+            disabled
+            class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            ⚡ Trigger Mid-Call Analysis Now
+          </button>
+          <button
+            type="button"
+            id="btn-mic-record"
+            onclick="toggleMicRecording()"
+            class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
+          >
+            🎙️ Record 4s Live Mic Chunk
+          </button>
+          <button
+            type="button"
+            onclick="stopCallSimulation()"
+            class="px-3 py-2 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition ml-auto"
+          >
+            Stop Audio
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Live Alert Panel, Spoken Warnings & Emergency SMS Dispatch (7 cols) -->
+    <section class="lg:col-span-7 space-y-5">
+      <!-- Live Alert Panel -->
+      <div id="alert-panel" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl transition-all duration-300">
+        <!-- Default Idle State -->
+        <div id="state-idle" class="py-12 text-center space-y-3">
+          <div class="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700 mx-auto flex items-center justify-center text-slate-400">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 4v5c0 5-3.5 8.5-7 9-3.5-.5-7-4-7-9V7l7-4z" />
+            </svg>
+          </div>
+          <h3 class="text-base font-semibold text-slate-200">Scam Call Shield Ready</h3>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Select one of the 4 test scenarios on the left. Scam Call Shield will intercept the audio chunk mid-call (1.7s in), evaluate coercion &amp; authority claims via Gemini, speak a warning in Gujarati or Hindi, and notify the emergency contact.
+          </p>
+        </div>
+
+        <!-- Analyzing Loader State -->
+        <div id="state-loading" class="hidden py-12 text-center space-y-3">
+          <div class="w-12 h-12 rounded-full border-4 border-amber-500/30 border-t-amber-500 animate-spin mx-auto"></div>
+          <h3 class="text-base font-semibold text-amber-300">Analyzing 3–5s Audio Chunk with Gemini...</h3>
+          <p class="text-xs text-slate-400 font-mono">POST /api/analyze-chunk · Multimodal Audio + Strict JSON Schema</p>
+        </div>
+
+        <!-- Active Result State -->
+        <div id="state-result" class="hidden space-y-5">
+          <!-- Top Flashing Banner (Red for Scam, Green for Genuine Call) -->
+          <div id="result-banner" class="p-4 rounded-xl border flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <div id="result-icon" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-bold shrink-0">
+                ⚠️
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span id="result-badge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
+                    SCAM DETECTED
+                  </span>
+                  <span id="result-lang" class="text-xs font-mono text-slate-300"></span>
+                </div>
+                <h3 id="result-headline" class="text-lg sm:text-xl font-extrabold tracking-tight mt-0.5">
+                  HANG UP IMMEDIATELY
+                </h3>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="text-xs uppercase tracking-wider text-slate-300">Fraud Confidence</div>
+              <div id="result-confidence" class="text-2xl font-black font-mono">98%</div>
+            </div>
+          </div>
+
+          <!-- Explicit Red Flags Pills -->
+          <div id="red-flags-section" class="space-y-2">
+            <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Explicit Red Flags Identified
+            </div>
+            <div id="red-flags-list" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <!-- Spoken Voice Warnings (Gujarati & Hindi) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Gujarati Warning Box -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1.5">
+                  <span>ગુજરાતી ચેતવણી (Gujarati Alert · gu-IN)</span>
+                  <span class="font-mono text-[11px] text-slate-400">TTS Ready</span>
+                </div>
+                <p id="warning-gujarati-text" class="text-sm text-slate-100 leading-relaxed"></p>
+              </div>
+              <button
+                type="button"
+                onclick="speakWarning('gu')"
+                class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 flex items-center justify-center gap-2 transition"
+              >
+                <span>🔊 ગુજરાતીમાં સાંભળો (Speak Gujarati Alert)</span>
+              </button>
+            </div>
+
+            <!-- Hindi Warning Box -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-orange-300 font-semibold mb-1.5">
+                  <span>हिन्दी चेतावनी (Hindi Alert · hi-IN)</span>
+                  <span class="font-mono text-[11px] text-slate-400">TTS Ready</span>
+                </div>
+                <p id="warning-hindi-text" class="text-sm text-slate-100 leading-relaxed"></p>
+              </div>
+              <button
+                type="button"
+                onclick="speakWarning('hi')"
+                class="w-full py-2 px-3 rounded-lg text-xs font-bold bg-orange-500/20 hover:bg-orange-500/30 text-orange-200 border border-orange-500/40 flex items-center justify-center gap-2 transition"
+              >
+                <span>🔊 हिन्दी में सुनें (Speak Hindi Alert)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Automated Emergency Contact SMS / WhatsApp Notification Badge -->
+          <div id="emergency-sms-card" class="hidden p-4 rounded-xl bg-red-950/40 border border-red-500/40 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white">
+                  📲 MOCK_SMS_SENT
+                </span>
+                <span class="text-xs font-semibold text-red-200">
+                  Emergency Contact Dispatched → <strong id="sms-recipient">Son (Rahul)</strong>
+                </span>
+              </div>
+              <span id="sms-timestamp" class="text-[11px] font-mono text-red-300/80"></span>
+            </div>
+            <div id="sms-message" class="p-3 rounded-lg bg-slate-950/90 border border-red-500/30 text-xs font-mono text-slate-200"></div>
+          </div>
+
+          <!-- Raw Strict JSON Output Inspector -->
+          <div class="pt-2 border-t border-slate-800">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+              <span class="font-semibold uppercase tracking-wider">Strict JSON Schema Output (`POST /api/analyze-chunk`)</span>
+              <span id="result-meta" class="font-mono text-[11px] text-slate-400"></span>
+            </div>
+            <pre
+              id="json-output"
+              class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-300 overflow-x-auto max-h-52"
+            ></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Pre-loaded scenarios matching engine.py
+    const SCENARIOS = {
+      gujarati_digital_arrest: {
+        id: "gujarati_digital_arrest",
+        title: '1. Gujarati Scam ("Digital Arrest")',
+        language: "gu",
+        bcp47_locale: "gu-IN",
+        caller_label: "Unknown Caller (Claims: Mumbai Cyber Cell)",
+        caller_number: "+91 92XXX 88104",
+        transcript:
+          "નમસ્તે, હું મુંબઈ પોલીસ સાયબર સેલમાંથી બોલું છું. તમારા આઈડી નંબર પર મોકલેલા પાર્સલમાં ડ્રગ્સ મળ્યા છે. તમે ડિજિટલ અરેસ્ટમાં છો, ફોન કાપશો નહીં. કેસ બંધ કરવા માટે અત્યારે જ ₹50,000 ટ્રાન્સફર કરો."
+      },
+      hindi_digital_arrest: {
+        id: "hindi_digital_arrest",
+        title: '2. Hindi Scam ("Digital Arrest")',
+        language: "hi",
+        bcp47_locale: "hi-IN",
+        caller_label: "Unknown Caller (Claims: Cyber Crime HQ)",
+        caller_number: "+91 88XXX 19023",
+        transcript:
+          "नमस्ते, मैं मुंबई पुलिस साइबर सेल से बोल रहा हूँ। आपके आईडी नंबर से भेजे गए पार्सल में ड्रग्स मिले हैं। आप डिजिटल अरेस्ट में हैं, कॉल मत काटिए। केस बंद करने के लिए अभी ₹50,000 ट्रांसफर कीजिए।"
+      },
+      english_bank_kyc: {
+        id: "english_bank_kyc",
+        title: '3. English Scam ("Bank KYC")',
+        language: "en",
+        bcp47_locale: "en-IN",
+        caller_label: "Unknown Caller (Claims: Bank KYC Dept)",
+        caller_number: "+91 70XXX 44912",
+        transcript:
+          "Hello, this is your bank's KYC team. Your account will be blocked today because your KYC has expired. To keep it active, please share the OTP we just sent to your phone."
+      },
+      genuine_delivery_control: {
+        id: "genuine_delivery_control",
+        title: "4. Genuine Control Call (Delivery Partner)",
+        language: "en",
+        bcp47_locale: "en-IN",
+        caller_label: "Swiggy Delivery Partner (Verified)",
+        caller_number: "+91 80XXX 55200",
+        transcript:
+          "Hi, this is the delivery partner from Swiggy. I'm outside your building with your order. Which gate should I come to?"
+      }
+    };
+
+    let currentScenario = null;
+    let lastAnalysisResult = null;
+    let midCallTimeout = null;
+    let timerInterval = null;
+    let callStartTime = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let activeEngineMode = "gemini";
+
+    // Resolve API base so index.html works at `/` (standalone :8080) or `/scam-shield` (repo-voice-ai :8003)
+    const API_BASE = "";
+
+    function toggleModeModal(show) {
+      const modal = document.getElementById("mode-modal");
+      if (show) modal.classList.remove("hidden");
+      else modal.classList.add("hidden");
+    }
+
+    function updateModeUI(modeData) {
+      activeEngineMode = modeData.mode || (modeData.simulated ? "mock" : "gemini");
+      const isMock = activeEngineMode === "mock";
+      const badgeMode = document.getElementById("badge-mode");
+      const badgeProvider = document.getElementById("badge-provider");
+      const btnGemini = document.getElementById("btn-mode-gemini");
+      const btnMock = document.getElementById("btn-mode-mock");
+
+      if (isMock) {
+        badgeMode.classList.remove("hidden");
+        btnMock.className = "px-3 py-1 rounded-full font-bold bg-purple-500 text-white shadow transition";
+        btnGemini.className = "px-3 py-1 rounded-full font-semibold text-slate-400 hover:text-white transition";
+      } else {
+        badgeMode.classList.add("hidden");
+        btnGemini.className = "px-3 py-1 rounded-full font-bold bg-emerald-500 text-slate-950 shadow transition";
+        btnMock.className = "px-3 py-1 rounded-full font-semibold text-slate-400 hover:text-white transition";
+      }
+
+      badgeProvider.textContent = `Engine: ${activeEngineMode.toUpperCase()} (${modeData.model || "gemini-2.5-flash"})`;
+      document.getElementById("modal-active-provider").textContent = isMock ? "MOCK (Simulated Demo)" : "GEMINI (Real-Time AI)";
+      document.getElementById("modal-key-status").textContent = modeData.geminiKeyConfigured ? "Configured in .env ✓" : "Missing in .env";
+      document.getElementById("modal-model-name").textContent = modeData.model || "gemini-2.5-flash";
+
+      document.getElementById("dot-gemini").className = !isMock
+        ? "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"
+        : "w-2.5 h-2.5 rounded-full bg-slate-600";
+      document.getElementById("dot-mock").className = isMock
+        ? "w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping"
+        : "w-2.5 h-2.5 rounded-full bg-slate-600";
+    }
+
+    async function switchEngineMode(targetMode) {
+      try {
+        const res = await fetch(`${API_BASE}/api/mode`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: targetMode })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error?.message || `HTTP ${res.status}`);
+        updateModeUI(data);
+      } catch (err) {
+        alert(`Failed to switch mode: ${err.message}`);
+      }
+    }
+
+    async function checkServerStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/api/mode`);
+        if (res.ok) {
+          const data = await res.json();
+          updateModeUI(data);
+          return;
+        }
+      } catch (_) {}
+      try {
+        const res = await fetch(`${API_BASE}/ready`);
+        const data = await res.json();
+        const prov = data?.checks?.provider || {};
+        updateModeUI({
+          mode: prov.name || (data.simulated ? "mock" : "gemini"),
+          simulated: Boolean(data.simulated),
+          model: prov.model || "gemini-2.5-flash",
+          geminiKeyConfigured: (prov.missing || []).length === 0
+        });
+      } catch (err) {
+        document.getElementById("badge-provider").textContent = "Engine: Offline";
+      }
+    }
+
+    // Generate a valid 16-bit mono WAV audio chunk in memory representing the 3.5s audio window
+    function synthesizeWavChunkBlob(textSeed, durationSeconds = 1.6, sampleRate = 16000) {
+      const numSamples = Math.floor(durationSeconds * sampleRate);
+      const buffer = new ArrayBuffer(44 + numSamples * 2);
+      const view = new DataView(buffer);
+
+      function writeStr(offset, str) {
+        for (let i = 0; i < str.length; i++) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      }
+
+      writeStr(0, "RIFF");
+      view.setUint32(4, 36 + numSamples * 2, true);
+      writeStr(8, "WAVE");
+      writeStr(12, "fmt ");
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, 1, true); // Mono
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, "data");
+      view.setUint32(40, numSamples * 2, true);
+
+      let seed = 0;
+      for (let i = 0; i < textSeed.length; i++) {
+        seed = (seed * 31 + textSeed.charCodeAt(i)) & 0xffff;
+      }
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        const freq = 220 + ((seed + Math.floor(t * 6) * 47) % 320);
+        const envelope = Math.sin(Math.PI * ((i % 2000) / 2000));
+        const sample = Math.sin(2 * Math.PI * freq * t) * 0.25 * envelope;
+        view.setInt16(44 + i * 2, Math.max(-1, Math.min(1, sample)) * 32767, true);
+      }
+
+      return new Blob([buffer], { type: "audio/wav" });
+    }
+
+    function setWaveformActive(active) {
+      const bars = document.querySelectorAll("#waveform span");
+      bars.forEach((bar, idx) => {
+        if (active) {
+          bar.classList.add("wave-active");
+          bar.style.animationDelay = `${idx * 0.12}s`;
+        } else {
+          bar.classList.remove("wave-active");
+        }
+      });
+    }
+
+    function startCallTimer() {
+      clearInterval(timerInterval);
+      callStartTime = performance.now();
+      const el = document.getElementById("call-timer");
+      timerInterval = setInterval(() => {
+        const elapsed = (performance.now() - callStartTime) / 1000;
+        const mins = String(Math.floor(elapsed / 60)).padStart(2, "0");
+        const secs = (elapsed % 60).toFixed(1).padStart(4, "0");
+        el.textContent = `${mins}:${secs}`;
+      }, 100);
+    }
+
+    function stopCallSimulation() {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      clearTimeout(midCallTimeout);
+      clearInterval(timerInterval);
+      setWaveformActive(false);
+      document.getElementById("call-dot").className = "w-2.5 h-2.5 rounded-full bg-slate-600";
+      document.getElementById("chunk-status").textContent = "Stopped";
+    }
+
+    function speakText(text, locale) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = locale;
+      utter.rate = 1.0;
+      const voices = window.speechSynthesis.getVoices();
+      const langPrefix = locale.split("-")[0].toLowerCase();
+      const matched =
+        voices.find((v) => v.lang.toLowerCase() === locale.toLowerCase()) ||
+        voices.find((v) => v.lang.toLowerCase().startsWith(langPrefix));
+      if (matched) utter.voice = matched;
+      utter.onend = () => setWaveformActive(false);
+      setWaveformActive(true);
+      window.speechSynthesis.speak(utter);
+    }
+
+    function startScenario(scenarioId) {
+      stopCallSimulation();
+      const sc = SCENARIOS[scenarioId];
+      if (!sc) return;
+      currentScenario = sc;
+
+      // Highlight selected button
+      document.querySelectorAll(".scenario-btn").forEach((b) => {
+        b.classList.remove("ring-2", "ring-amber-500");
+      });
+      const activeBtn = document.getElementById(`btn-${scenarioId}`);
+      if (activeBtn) activeBtn.classList.add("ring-2", "ring-amber-500");
+
+      // Update caller display
+      document.getElementById("caller-label").textContent = sc.caller_label;
+      document.getElementById("caller-number").textContent = `${sc.caller_number} · Locale: ${sc.bcp47_locale}`;
+      document.getElementById("live-transcript").textContent = `"${sc.transcript}"`;
+      document.getElementById("call-dot").className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping";
+      document.getElementById("btn-analyze-now").disabled = false;
+      document.getElementById("chunk-status").textContent = "Streaming caller audio... (Chunk @ 1.7s)";
+
+      startCallTimer();
+      speakText(sc.transcript, sc.bcp47_locale);
+
+      // Trigger mid-call chunk analysis 1.7 seconds into the incoming call
+      midCallTimeout = setTimeout(() => {
+        void executeChunkAnalysis({
+          scenarioId: sc.id,
+          transcript: sc.transcript
+        });
+      }, 1700);
+    }
+
+    function triggerMidCallAnalysisNow() {
+      if (!currentScenario) return;
+      clearTimeout(midCallTimeout);
+      void executeChunkAnalysis({
+        scenarioId: currentScenario.id,
+        transcript: currentScenario.transcript
+      });
+    }
+
+    async function executeChunkAnalysis({ scenarioId, transcript, customBlob }) {
+      document.getElementById("state-idle").classList.add("hidden");
+      document.getElementById("state-result").classList.add("hidden");
+      document.getElementById("state-loading").classList.remove("hidden");
+      document.getElementById("chunk-status").textContent = "Uploading 3.5s audio chunk → /api/analyze-chunk";
+
+      try {
+        const wavBlob = customBlob || synthesizeWavChunkBlob(transcript || scenarioId || "chunk");
+        const formData = new FormData();
+        formData.append("audio", wavBlob, `${scenarioId || "live"}_chunk.wav`);
+        if (scenarioId) formData.append("scenario_id", scenarioId);
+        if (transcript) formData.append("transcript", transcript);
+        formData.append("recipient", "Son (Rahul)");
+        formData.append("mode", activeEngineMode);
+
+        const response = await fetch(`${API_BASE}/api/analyze-chunk`, {
+          method: "POST",
+          body: formData
+        });
+
+        const body = await response.json();
+        if (!response.ok) {
+          throw new Error(body?.error?.message || `HTTP ${response.status}`);
+        }
+
+        lastAnalysisResult = body;
+        renderAnalysisResult(body);
+      } catch (err) {
+        document.getElementById("state-loading").classList.add("hidden");
+        document.getElementById("state-idle").classList.remove("hidden");
+        document.getElementById("chunk-status").textContent = `Error: ${err.message}`;
+        alert(`Scam Call Shield API Error: ${err.message}`);
+      }
+    }
+
+    function renderAnalysisResult(res) {
+      document.getElementById("state-loading").classList.add("hidden");
+      document.getElementById("state-result").classList.remove("hidden");
+      document.getElementById("chunk-status").textContent = `Chunk Analyzed in ${res.latency_ms}ms`;
+
+      const alertPanel = document.getElementById("alert-panel");
+      const banner = document.getElementById("result-banner");
+      const icon = document.getElementById("result-icon");
+      const badge = document.getElementById("result-badge");
+      const headline = document.getElementById("result-headline");
+      const confEl = document.getElementById("result-confidence");
+      const langEl = document.getElementById("result-lang");
+      const flagsSection = document.getElementById("red-flags-section");
+      const flagsList = document.getElementById("red-flags-list");
+      const smsCard = document.getElementById("emergency-sms-card");
+
+      const pct = Math.round((res.confidence_score || 0) * 100);
+      confEl.textContent = `${pct}%`;
+      langEl.textContent = `Detected Lang: ${(res.detected_language || "en").toUpperCase()}`;
+
+      if (res.is_scam) {
+        alertPanel.className = "bg-slate-900 border-2 border-red-500 rounded-2xl p-6 shadow-2xl scam-pulse";
+        banner.className = "p-4 rounded-xl border border-red-500 bg-red-950/70 flex flex-wrap items-center justify-between gap-4 scam-flash";
+        icon.className = "w-12 h-12 rounded-xl bg-red-500/20 border border-red-500/50 text-red-300 flex items-center justify-center text-2xl font-bold shrink-0";
+        icon.textContent = "🚨";
+        badge.className = "text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-red-500 text-white";
+        badge.textContent = "SCAM DETECTED · CRITICAL THREAT";
+        headline.className = "text-lg sm:text-xl font-extrabold tracking-tight text-red-200 mt-0.5";
+        headline.textContent = res.action.replace(/_/g, " ");
+        confEl.className = "text-2xl font-black font-mono text-red-400";
+
+        // Render Red Flag Pills
+        flagsSection.classList.remove("hidden");
+        flagsList.innerHTML = "";
+        (res.red_flags || []).forEach((flag) => {
+          const pill = document.createElement("span");
+          pill.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-200 border border-red-500/40";
+          pill.textContent = `🚩 ${flag}`;
+          flagsList.appendChild(pill);
+        });
+
+        // Emergency Contact SMS card
+        if (res.emergency_dispatch && res.emergency_dispatch.status === "MOCK_SMS_SENT") {
+          smsCard.classList.remove("hidden");
+          document.getElementById("sms-recipient").textContent =
+            `${res.emergency_dispatch.recipient} (${res.emergency_dispatch.phone_mock})`;
+          document.getElementById("sms-timestamp").textContent = res.emergency_dispatch.dispatched_at;
+          document.getElementById("sms-message").textContent = res.emergency_dispatch.message;
+        } else {
+          smsCard.classList.add("hidden");
+        }
+
+        // Auto-speak colloquial warning in Gujarati or Hindi
+        if (document.getElementById("toggle-autospeak").checked) {
+          const preferredLang = res.detected_language === "gu" ? "gu" : "hi";
+          setTimeout(() => speakWarning(preferredLang), 350);
+        }
+      } else {
+        // Genuine Safe Call (Zero False Positive Control)
+        alertPanel.className = "bg-slate-900 border-2 border-emerald-500/80 rounded-2xl p-6 shadow-xl";
+        banner.className = "p-4 rounded-xl border border-emerald-500/60 bg-emerald-950/50 flex flex-wrap items-center justify-between gap-4";
+        icon.className = "w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center justify-center text-2xl font-bold shrink-0";
+        icon.textContent = "✅";
+        badge.className = "text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-emerald-500 text-slate-950";
+        badge.textContent = "SAFE CALL · VERIFIED BENIGN";
+        headline.className = "text-lg sm:text-xl font-extrabold tracking-tight text-emerald-200 mt-0.5";
+        headline.textContent = "SAFE TO CONTINUE (ZERO FALSE POSITIVES)";
+        confEl.className = "text-2xl font-black font-mono text-emerald-400";
+
+        flagsSection.classList.remove("hidden");
+        flagsList.innerHTML =
+          '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">✓ No Authority Impersonation</span>' +
+          '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">✓ No OTP / Financial Demand</span>';
+        smsCard.classList.add("hidden");
+      }
+
+      document.getElementById("warning-gujarati-text").textContent = res.warning_gujarati;
+      document.getElementById("warning-hindi-text").textContent = res.warning_hindi;
+      document.getElementById("result-meta").textContent =
+        `provider=${res.provider} · model=${res.model} · simulated=${res.simulated} · latency=${res.latency_ms}ms`;
+
+      // Show strict JSON schema output
+      const strictPayload = {
+        is_scam: res.is_scam,
+        confidence_score: res.confidence_score,
+        detected_language: res.detected_language,
+        red_flags: res.red_flags,
+        warning_gujarati: res.warning_gujarati,
+        warning_hindi: res.warning_hindi,
+        action: res.action,
+        emergency_dispatch: res.emergency_dispatch
+      };
+      document.getElementById("json-output").textContent = JSON.stringify(strictPayload, null, 2);
+    }
+
+    function speakWarning(lang) {
+      if (!lastAnalysisResult) return;
+      const text = lang === "gu" ? lastAnalysisResult.warning_gujarati : lastAnalysisResult.warning_hindi;
+      const locale = lang === "gu" ? "gu-IN" : "hi-IN";
+      speakText(text, locale);
+    }
+
+    async function toggleMicRecording() {
+      const btn = document.getElementById("btn-mic-record");
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+        mediaRecorder.onstop = () => {
+          stream.getTracks().forEach((t) => t.stop());
+          btn.textContent = "🎙️ Record 4s Live Mic Chunk";
+          const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+          void executeChunkAnalysis({
+            scenarioId: null,
+            transcript: "",
+            customBlob: blob
+          });
+        };
+        mediaRecorder.start();
+        btn.textContent = "⏹️ Recording 4s... (Click to Stop)";
+        document.getElementById("caller-label").textContent = "Live Microphone Audio Chunk";
+        document.getElementById("live-transcript").textContent = "Recording 4-second live audio chunk from microphone...";
+        startCallTimer();
+        setTimeout(() => {
+          if (mediaRecorder && mediaRecorder.state === "recording") {
+            mediaRecorder.stop();
+          }
+        }, 4000);
+      } catch (err) {
+        alert(`Microphone access unavailable: ${err.message}`);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      void checkServerStatus();
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.getVoices();
+      }
+    });
+  </script>
+</body>
+</html>

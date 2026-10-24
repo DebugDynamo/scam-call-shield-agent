@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     max_tool_steps: int = Field(5, ge=1, le=20)
 
     # tools
-    tool_permissions: str = "tasks:read,tasks:write,calc:use,search:read,approvals:request,agent:invoke"
+    tool_permissions: str = "tasks:read,tasks:write,calc:use,search:read,approvals:request,agent:invoke,scam:analyze"
     approval_ttl_seconds: int = Field(300, ge=5)
     search_api_url: str | None = None
     search_api_key: str | None = None

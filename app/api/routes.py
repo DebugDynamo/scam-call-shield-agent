@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Request, Response, WebSocket
+from fastapi import APIRouter, Depends, File, Form, Query, Request, Response, UploadFile, WebSocket
+from fastapi.responses import HTMLResponse
 
 from ..contracts import models as C
 from ..errors import AppError  # noqa: F401
 from ..providers import status as pstatus
+from ..services.scam_shield import SCENARIOS, AnalyzeChunkResponse, analyze_call_chunk_with_settings
 from ..tools.agent_proxy import fetch_remote_specs
 from .deps import container, require_api_key
 
@@ -201,6 +204,84 @@ async def plivo_stream(ws: WebSocket, session_id: str, token: str):
          summary="(extension) run the session TTL cleanup now")
 async def admin_cleanup(request: Request):
     return {"ended": await request.app.state.c.sessions.cleanup_expired()}
+
+
+# ---------------- scam call shield ----------------
+_REPO_HTML = Path(__file__).resolve().parents[2] / "index.html"
+_STANDALONE_HTML = _REPO_HTML if _REPO_HTML.exists() else (Path(__file__).resolve().parents[3] / "scam-call-shield" / "index.html")
+
+
+@root.get("/scam-shield", response_class=HTMLResponse, include_in_schema=False)
+async def serve_scam_shield_dashboard():
+    if _STANDALONE_HTML.exists():
+        return HTMLResponse(_STANDALONE_HTML.read_text(encoding="utf-8"))
+    return HTMLResponse("<h1>Scam Call Shield index.html not found</h1>", status_code=404)
+
+
+@root.get("/api/mode", tags=["scam-shield"])
+@v1.get("/scam-shield/mode", tags=["scam-shield"])
+async def get_scam_shield_mode(request: Request):
+    s = request.app.state.c.settings
+    return {
+        "mode": s.llm_provider,
+        "simulated": s.llm_provider == "mock",
+        "model": s.gemini_model,
+        "geminiKeyConfigured": bool(s.gemini_api_key),
+    }
+
+
+@root.post("/api/mode", tags=["scam-shield"])
+@v1.post("/scam-shield/mode", tags=["scam-shield"])
+async def set_scam_shield_mode(request: Request, body: dict):
+    s = request.app.state.c.settings
+    target = str(body.get("mode") or "").strip().lower()
+    if target not in ("gemini", "mock"):
+        raise AppError("VALIDATION_FAILED", "mode must be 'gemini' or 'mock'")
+    s.llm_provider = target
+    if body.get("model"):
+        s.gemini_model = str(body["model"]).strip()
+    return {
+        "mode": s.llm_provider,
+        "simulated": s.llm_provider == "mock",
+        "model": s.gemini_model,
+        "geminiKeyConfigured": bool(s.gemini_api_key),
+    }
+
+
+@root.get("/api/scenarios", tags=["scam-shield"])
+@v1.get("/scam-shield/scenarios", tags=["scam-shield"])
+async def list_scam_scenarios():
+    return {
+        "items": [s.model_dump() for s in SCENARIOS.values()],
+        "total": len(SCENARIOS),
+    }
+
+
+@root.post("/api/analyze-chunk", response_model=AnalyzeChunkResponse, responses=ERR, tags=["scam-shield"])
+@v1.post("/scam-shield/analyze-chunk", response_model=AnalyzeChunkResponse, responses=ERR, tags=["scam-shield"])
+async def analyze_scam_chunk(
+    request: Request,
+    audio: Annotated[UploadFile | None, File(description="3-5s call audio chunk (WAV/WebM/OGG/MP3)")] = None,
+    scenario_id: Annotated[str | None, Form(description="Optional pre-loaded scenario key")] = None,
+    transcript: Annotated[str | None, Form(description="Optional caller transcript")] = None,
+    recipient: Annotated[str, Form(description="Emergency contact name")] = "Son (Rahul)",
+    mode: Annotated[str | None, Form(description="Optional override mode: 'gemini' or 'mock'")] = None,
+) -> AnalyzeChunkResponse:
+    audio_bytes: bytes | None = None
+    mime_type = "audio/wav"
+    if audio is not None:
+        audio_bytes = await audio.read()
+        if audio.content_type:
+            mime_type = audio.content_type
+    return await analyze_call_chunk_with_settings(
+        request.app.state.c.settings,
+        audio_bytes=audio_bytes if (audio_bytes and len(audio_bytes) > 0) else None,
+        mime_type=mime_type,
+        transcript=transcript,
+        scenario_id=scenario_id,
+        recipient=recipient,
+        mode_override=mode,
+    )
 
 
 __all__ = ["container", "root", "v1", "ws_router"]
