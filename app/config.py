@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     stt_provider: str = "sarvam"
     tts_provider: str = "google"
     gemini_api_key: str | None = Field(default=None, validation_alias=AliasChoices("GEMINI_API_KEY", "GOOGLE_API_KEY"))
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.8-flash"
     gemini_tts_voice: str = "Kore"
     elevenlabs_api_key: str | None = None
     elevenlabs_voice_id: str = "21m00Tcm4TlvDq8ikWAM"
