@@ -17,6 +17,8 @@ class ToolCall:
     name: str
     arguments: dict[str, Any]
     id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    # Gemini 3.x returns an opaque thought_signature with a function call and requires it echoed back verbatim.
+    thought_signature: bytes | None = None
 
 
 @dataclass
@@ -133,7 +135,9 @@ class GeminiLLM:
                 out.append(types.Content(role="model", parts=[types.Part(text=h.text)]))
             elif h.role == "tool" and h.tool_call:
                 tc = h.tool_call
-                out.append(types.Content(role="model", parts=[types.Part.from_function_call(name=tc["name"], args=tc["arguments"])]))
+                sig = tc.get("thought_signature") or b"skip_thought_signature_validator"  # documented fallback when none was captured
+                out.append(types.Content(role="model", parts=[types.Part(
+                    function_call=types.FunctionCall(name=tc["name"], args=tc["arguments"]), thought_signature=sig)]))
                 out.append(types.Content(role="user", parts=[types.Part.from_function_response(
                     name=tc["name"], response={"status": tc.get("status"), **(tc.get("result") or {})})]))
         return out
@@ -162,7 +166,12 @@ class GeminiLLM:
             if code in (401, 403):
                 raise AppError("PROVIDER_ERROR", f"Gemini rejected the credentials (HTTP {code}); check GEMINI_API_KEY") from e
             raise AppError("PROVIDER_ERROR", f"Gemini error (HTTP {code}): {getattr(e, 'message', 'unknown')}"[:300]) from e
-        calls = [ToolCall(fc.name, dict(fc.args or {})) for fc in (resp.function_calls or [])]
+        calls = []
+        for cand in (resp.candidates or [])[:1]:
+            for part in (cand.content.parts if cand.content and cand.content.parts else []):
+                if part.function_call:
+                    calls.append(ToolCall(part.function_call.name, dict(part.function_call.args or {}),
+                                          thought_signature=part.thought_signature))
         text = None
         try:
             text = resp.text

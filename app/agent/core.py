@@ -38,7 +38,8 @@ class VoiceAgent:
             await self.repo.add_message(rec)
         return rec
 
-    async def call_tool(self, name: str, arguments: dict[str, Any], *, add_history: bool = True) -> tuple[ToolOutcome, MessageRecord]:
+    async def call_tool(self, name: str, arguments: dict[str, Any], *, add_history: bool = True,
+                        thought_signature: bytes | None = None) -> tuple[ToolOutcome, MessageRecord]:
         outcome = await self.executor.execute(self.session_id, name, arguments)
         tc = {"name": name, "arguments": arguments, "result": outcome.result, "status": outcome.status}
         if not self.persist_transcripts:
@@ -46,7 +47,8 @@ class VoiceAgent:
         msg = await self.add_message("tool", f"{name} -> {outcome.status}", tc)
         if add_history:
             self.history.append(ChatItem("tool", msg.text, {"name": name, "arguments": arguments,
-                                                           "result": outcome.result, "status": outcome.status}))
+                                                           "result": outcome.result, "status": outcome.status,
+                                                           "thought_signature": thought_signature}))
         return outcome, msg
 
     async def note_external_result(self, text: str, tool_call: dict[str, Any]) -> MessageRecord:
@@ -63,7 +65,7 @@ class VoiceAgent:
             reply = await llm.generate(self.system_prompt, self.history, tools)
             if reply.tool_calls:
                 for tc in reply.tool_calls:
-                    outcome, msg = await self.call_tool(tc.name, tc.arguments)
+                    outcome, msg = await self.call_tool(tc.name, tc.arguments, thought_signature=tc.thought_signature)
                     res.messages.append(msg)
                     res.tool_outcomes.append(outcome)
                 continue
