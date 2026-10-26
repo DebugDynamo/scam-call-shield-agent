@@ -117,7 +117,7 @@
           </div>
           <div class="font-bold text-sm text-white">⚡ Live Gemini Multimodal</div>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Sends raw WAV/WebM audio chunks to Google <code>gemini-2.5-flash</code> using <code>GEMINI_API_KEY</code> from <code>.env</code>.
+            Sends raw WAV/WebM audio chunks to Google <code>gemini-3.8-flash</code> using <code>GEMINI_API_KEY</code> from <code>.env</code>.
           </p>
         </button>
 
@@ -150,7 +150,7 @@
         </div>
         <div class="flex justify-between">
           <span class="text-slate-400">Target Model:</span>
-          <span id="modal-model-name" class="text-slate-200">gemini-2.5-flash</span>
+          <span id="modal-model-name" class="text-slate-200">gemini-3.8-flash</span>
         </div>
       </div>
 
@@ -539,10 +539,10 @@
         btnMock.className = "px-3 py-1 rounded-full font-semibold text-slate-400 hover:text-white transition";
       }
 
-      badgeProvider.textContent = `Engine: ${activeEngineMode.toUpperCase()} (${modeData.model || "gemini-2.5-flash"})`;
+      badgeProvider.textContent = `Engine: ${activeEngineMode.toUpperCase()} (${modeData.model || "gemini-3.8-flash"})`;
       document.getElementById("modal-active-provider").textContent = isMock ? "MOCK (Simulated Demo)" : "GEMINI (Real-Time AI)";
       document.getElementById("modal-key-status").textContent = modeData.geminiKeyConfigured ? "Configured in .env ✓" : "Missing in .env";
-      document.getElementById("modal-model-name").textContent = modeData.model || "gemini-2.5-flash";
+      document.getElementById("modal-model-name").textContent = modeData.model || "gemini-3.8-flash";
 
       document.getElementById("dot-gemini").className = !isMock
         ? "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"
@@ -583,7 +583,7 @@
         updateModeUI({
           mode: prov.name || (data.simulated ? "mock" : "gemini"),
           simulated: Boolean(data.simulated),
-          model: prov.model || "gemini-2.5-flash",
+          model: prov.model || "gemini-3.8-flash",
           geminiKeyConfigured: (prov.missing || []).length === 0
         });
       } catch (err) {

@@ -1,7 +1,7 @@
 """Scam Call Shield — Multimodal Gemini Audio Fraud Detection Engine.
 
 Adheres strictly to Google Cloud & Garbathon architecture standards:
-- Uses the official `google-genai` SDK (`gemini-2.5-flash` / `gemini-4-argon`) with native
+- Uses the official `google-genai` SDK (`gemini-3.8-flash` / `gemini-4-argon`) with native
   audio bytes (`types.Part.from_bytes`) and strict JSON Schema structured output.
 - Supports explicit `LLM_PROVIDER=mock` mode for deterministic offline/CI testing without
   ever silently falling back when `LLM_PROVIDER=gemini` is selected.
@@ -408,7 +408,7 @@ class ScamShieldEngine:
         else:
             self.provider = "gemini" if self.api_key else "mock"
 
-        self.model = (model or os.getenv("GEMINI_MODEL") or "gemini-2.5-flash").strip()
+        self.model = (model or os.getenv("GEMINI_MODEL") or "gemini-3.8-flash").strip()
         self.timeout_seconds = timeout_seconds
 
     @property

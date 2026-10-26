@@ -43,7 +43,7 @@ SERVICE_VERSION = "1.0.0"
 # Runtime-switchable state (allows switching between Real-Time Gemini and Demo Mode from the UI)
 _RUNTIME_STATE: dict[str, str | None] = {
     "mode": None,   # "gemini" | "mock" | None (use env default)
-    "model": None,  # e.g. "gemini-2.5-flash"
+    "model": None,  # e.g. "gemini-3.8-flash"
 }
 
 
@@ -58,7 +58,7 @@ def _utc_now() -> str:
 
 def get_engine(override_mode: str | None = None) -> ScamShieldEngine:
     active_mode = (override_mode or _RUNTIME_STATE.get("mode") or os.getenv("LLM_PROVIDER") or "").strip().lower() or None
-    active_model = (_RUNTIME_STATE.get("model") or os.getenv("GEMINI_MODEL") or "gemini-2.5-flash").strip()
+    active_model = (_RUNTIME_STATE.get("model") or os.getenv("GEMINI_MODEL") or "gemini-3.8-flash").strip()
     return ScamShieldEngine(
         provider=active_mode,
         api_key=os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"),
